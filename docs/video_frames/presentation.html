@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriAgent Presentation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1280px; height: 720px; overflow: hidden; background: #f8fafc; font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; }
+
+  .scene { position: absolute; top: 0; left: 0; width: 1280px; height: 720px; opacity: 0; transition: opacity 0.6s ease; display: flex; align-items: center; justify-content: center; }
+  .scene.active { opacity: 1; }
+
+  /* ── SCENE 1: Title ── */
+  #s1 { background: linear-gradient(135deg, #ecfdf5 0%, #eff6ff 100%); flex-direction: column; gap: 20px; }
+  #s1 .logo-wrap { display: flex; align-items: center; gap: 16px; }
+  #s1 .logo-icon { width: 72px; height: 72px; background: #10b981; border-radius: 20px; display: flex; align-items: center; justify-content: center; }
+  #s1 .logo-icon svg { width: 38px; height: 38px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  #s1 h1 { font-size: 52px; font-weight: 800; color: #064e3b; letter-spacing: -1px; }
+  #s1 .sub { font-size: 22px; color: #059669; font-weight: 500; }
+  #s1 .tagline { font-size: 17px; color: #6b7280; margin-top: 4px; }
+  #s1 .pill { display: inline-flex; align-items: center; gap: 8px; background: white; border: 1px solid #a7f3d0; border-radius: 999px; padding: 8px 20px; font-size: 14px; color: #047857; font-weight: 500; box-shadow: 0 2px 8px rgba(16,185,129,0.12); }
+
+  /* ── SCENE 2: Login Page ── */
+  #s2 { background: linear-gradient(135deg, #ecfdf5 0%, #eff6ff 100%); }
+  .login-card { background: white; border-radius: 24px; box-shadow: 0 2px 15px -3px rgba(0,0,0,0.07), 0 10px 20px -2px rgba(0,0,0,0.04); width: 360px; padding: 40px 36px; }
+  .login-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+  .login-logo .icon { width: 36px; height: 36px; background: #10b981; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .login-logo .icon svg { width: 18px; height: 18px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .login-logo span { font-weight: 700; font-size: 18px; color: #1f2937; }
+  .login-logo small { display: block; font-size: 11px; color: #9ca3af; font-weight: 400; }
+  .login-h2 { font-size: 22px; font-weight: 700; color: #1f2937; margin-bottom: 4px; }
+  .login-p { font-size: 13px; color: #6b7280; margin-bottom: 22px; }
+  .field-label { display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 6px; }
+  .field-input { width: 100%; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 14px; font-size: 13px; color: #374151; background: white; margin-bottom: 14px; }
+  .btn-green { width: 100%; background: #10b981; color: white; font-weight: 600; padding: 11px; border-radius: 12px; font-size: 14px; border: none; cursor: pointer; }
+  .caption-box { position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%); background: rgba(6,78,59,0.92); color: white; padding: 12px 28px; border-radius: 999px; font-size: 16px; font-weight: 500; white-space: nowrap; backdrop-filter: blur(4px); }
+
+  /* ── SCENE 3: Onboarding ── */
+  #s3 { background: linear-gradient(135deg, #ecfdf5 0%, #eff6ff 100%); flex-direction: column; gap: 0; }
+  .onboard-card { background: white; border-radius: 28px; box-shadow: 0 2px 15px -3px rgba(0,0,0,0.07); width: 460px; }
+  .onboard-header { display: flex; align-items: center; gap: 10px; padding: 22px 28px 18px; border-bottom: 1px solid #f3f4f6; }
+  .onboard-header .icon { width: 28px; height: 28px; background: #10b981; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .onboard-header .icon svg { width: 14px; height: 14px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .onboard-header span { font-weight: 700; color: #1f2937; }
+  .step-bar { display: flex; gap: 4px; padding: 12px 28px 6px; }
+  .step-seg { flex: 1; }
+  .step-seg-bar { height: 4px; border-radius: 999px; }
+  .step-seg-bar.done { background: #10b981; }
+  .step-seg-bar.todo { background: #f3f4f6; }
+  .step-seg-label { font-size: 10px; text-align: center; margin-top: 3px; }
+  .step-seg-label.active { color: #059669; font-weight: 600; }
+  .step-seg-label.inactive { color: #9ca3af; }
+  .onboard-body { padding: 18px 28px 22px; }
+  .onboard-body h2 { font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 14px; }
+  .goal-btn { width: 100%; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 500; border: 1px solid; margin-bottom: 8px; text-align: left; cursor: pointer; }
+  .goal-btn.selected { border-color: #34d399; background: #ecfdf5; color: #047857; }
+  .goal-btn.unsel { border-color: #e5e7eb; background: white; color: #374151; }
+  .chips-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 500; cursor: pointer; }
+  .chip.on { background: #d1fae5; color: #047857; border: 1px solid #34d399; }
+  .chip.off { background: #f3f4f6; color: #4b5563; border: 1px solid transparent; }
+
+  /* ── SCENE 4: Dashboard ── */
+  #s4 { background: #f9fafb; align-items: stretch; justify-content: stretch; padding: 0; }
+  .app-layout { display: flex; width: 100%; height: 100%; }
+  .sidebar { width: 220px; background: white; border-right: 1px solid #f3f4f6; display: flex; flex-direction: column; flex-shrink: 0; }
+  .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 20px 18px 16px; border-bottom: 1px solid #f3f4f6; }
+  .sidebar-logo .icon { width: 30px; height: 30px; background: #10b981; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .sidebar-logo .icon svg { width: 15px; height: 15px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .sidebar-logo span { font-weight: 700; font-size: 16px; color: #1f2937; }
+  .nav-links { flex: 1; padding: 10px 10px; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 13px; font-weight: 500; color: #4b5563; text-decoration: none; }
+  .nav-item.active { background: #ecfdf5; color: #047857; }
+  .nav-item svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .main-content { flex: 1; padding: 22px 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+  .greeting-row { display: flex; align-items: center; justify-content: space-between; }
+  .greeting-row h1 { font-size: 18px; font-weight: 700; color: #1f2937; }
+  .greeting-row p { font-size: 12px; color: #6b7280; margin-top: 2px; }
+  .streak-pill { display: flex; align-items: center; gap: 4px; background: #fffbeb; color: #b45309; padding: 6px 14px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .card { background: white; border-radius: 16px; border: 1px solid #f3f4f6; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .card h2 { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 14px; }
+  .macro-row { display: flex; align-items: center; justify-content: space-around; gap: 8px; }
+  .ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .ring-label { font-size: 11px; color: #6b7280; font-weight: 500; }
+  .cal-ring { position: relative; width: 100px; height: 100px; }
+  .cal-ring svg { transform: rotate(-90deg); }
+  .cal-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+  .cal-center .num { font-size: 17px; font-weight: 700; color: #1f2937; line-height: 1; }
+  .cal-center .of { font-size: 9px; color: #9ca3af; margin-top: 1px; }
+  .small-ring { position: relative; width: 70px; height: 70px; }
+  .small-ring svg { transform: rotate(-90deg); }
+  .small-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+  .small-center .snum { font-size: 12px; font-weight: 700; color: #1f2937; line-height: 1; }
+  .small-center .sof { font-size: 8px; color: #9ca3af; }
+
+  .chart-area { height: 100px; display: flex; align-items: flex-end; gap: 8px; padding: 0 4px; }
+  .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .chart-bar { width: 100%; border-radius: 4px 4px 0 0; background: #10b981; min-height: 4px; }
+  .chart-day { font-size: 9px; color: #9ca3af; }
+
+  .alert-box { display: flex; align-items: flex-start; gap: 8px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 10px 14px; }
+  .alert-box svg { width: 14px; height: 14px; stroke: #d97706; fill: none; stroke-width: 2; flex-shrink: 0; margin-top: 1px; }
+  .alert-box p { font-size: 12px; color: #92400e; }
+
+  .meal-card-item { background: white; border: 1px solid #f3f4f6; border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .meal-card-item .meal-name { font-size: 13px; font-weight: 600; color: #1f2937; }
+  .meal-card-item .meal-sub { font-size: 11px; color: #6b7280; margin-top: 2px; }
+  .meal-card-item .kcal { font-size: 13px; font-weight: 700; color: #10b981; }
+
+  /* ── SCENE 5: Log Meal ── */
+  #s5 { background: #f9fafb; align-items: stretch; justify-content: stretch; padding: 0; }
+  .log-body { flex: 1; padding: 22px 28px; display: flex; flex-direction: column; gap: 14px; max-width: 560px; }
+  .log-body h1 { font-size: 18px; font-weight: 700; color: #1f2937; }
+  .meal-type-row { display: flex; gap: 8px; }
+  .mtype { padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; }
+  .mtype.on { background: #d1fae5; color: #047857; }
+  .mtype.off { background: #f3f4f6; color: #6b7280; }
+  .tab-row { display: flex; border-bottom: 1px solid #f3f4f6; }
+  .tab-btn { display: flex; align-items: center; gap: 6px; padding: 10px 18px; font-size: 13px; font-weight: 500; border-bottom: 2px solid transparent; color: #6b7280; cursor: pointer; }
+  .tab-btn.active-tab { border-bottom-color: #10b981; color: #059669; }
+  .tab-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .text-area { width: 100%; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px 14px; font-size: 13px; color: #374151; resize: none; height: 110px; background: white; }
+  .result-box { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 16px; padding: 16px; }
+  .result-box .result-title { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: #065f46; margin-bottom: 10px; }
+  .result-box .result-title svg { width: 15px; height: 15px; stroke: #059669; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .macro-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 10px; }
+  .macro-cell { background: white; border-radius: 10px; padding: 8px; text-align: center; }
+  .macro-cell .mc-label { font-size: 10px; color: #6b7280; }
+  .macro-cell .mc-val { font-size: 14px; font-weight: 700; color: #1f2937; }
+  .macro-cell .mc-unit { font-size: 10px; color: #9ca3af; }
+  .food-item-row { display: flex; justify-content: space-between; background: white; border-radius: 8px; padding: 6px 10px; margin-bottom: 4px; font-size: 12px; }
+  .food-item-row .fi-name { color: #374151; }
+  .food-item-row .fi-cal { color: #6b7280; }
+  .feedback-text { font-size: 12px; color: #065f46; margin-top: 6px; line-height: 1.5; }
+
+  /* ── SCENE 6: Diet Plan ── */
+  #s6 { background: #f9fafb; align-items: stretch; justify-content: stretch; padding: 0; }
+  .plan-body { flex: 1; padding: 22px 28px; display: flex; flex-direction: column; gap: 14px; }
+  .plan-header-row { display: flex; align-items: center; justify-content: space-between; }
+  .plan-header-row h1 { font-size: 18px; font-weight: 700; color: #1f2937; }
+  .plan-header-row p { font-size: 12px; color: #6b7280; margin-top: 2px; }
+  .targets-card { background: white; border-radius: 14px; border: 1px solid #f3f4f6; padding: 14px 18px; }
+  .targets-card .targets-label { font-size: 10px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+  .targets-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; text-align: center; }
+  .target-item .tv { font-size: 18px; font-weight: 700; }
+  .target-item .tl { font-size: 11px; color: #6b7280; margin-top: 2px; }
+  .target-item .tu { font-size: 11px; color: #9ca3af; }
+  .day-cards { display: flex; flex-direction: column; gap: 8px; }
+  .day-card { background: white; border-radius: 14px; border: 1px solid #f3f4f6; }
+  .day-card-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; cursor: pointer; }
+  .day-icon { width: 32px; height: 32px; background: #ecfdf5; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .day-icon svg { width: 14px; height: 14px; stroke: #059669; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .day-name { font-size: 14px; font-weight: 600; color: #1f2937; }
+  .day-kcal { font-size: 11px; color: #6b7280; margin-top: 1px; }
+  .day-body { padding: 0 16px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .meal-section { border-radius: 10px; border: 1px solid; padding: 10px 12px; }
+  .meal-section.bkf { background: #fffbeb; border-color: #fde68a; }
+  .meal-section.lnc { background: #eff6ff; border-color: #bfdbfe; }
+  .meal-section.din { background: #f5f3ff; border-color: #ddd6fe; }
+  .meal-section-title { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+  .meal-food-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; margin-bottom: 3px; }
+  .meal-food-name { color: #374151; display: flex; align-items: center; gap: 4px; }
+  .meal-food-name svg { width: 10px; height: 10px; stroke: #9ca3af; fill: none; stroke-width: 2; }
+  .meal-food-qty { color: #9ca3af; font-size: 11px; }
+  .meal-food-kcal { color: #6b7280; font-size: 11px; font-weight: 500; }
+
+  /* ── SCENE 7: Chat ── */
+  #s7 { background: #f9fafb; align-items: stretch; justify-content: stretch; padding: 0; }
+  .chat-body { flex: 1; padding: 22px 28px; display: flex; flex-direction: column; gap: 14px; max-width: 640px; }
+  .chat-header { display: flex; align-items: center; gap: 10px; }
+  .chat-header .icon { width: 32px; height: 32px; background: #10b981; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .chat-header .icon svg { width: 15px; height: 15px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .chat-header h1 { font-size: 16px; font-weight: 700; color: #1f2937; }
+  .chat-header p { font-size: 11px; color: #6b7280; }
+  .suggestions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .suggestion-btn { text-align: left; padding: 10px 14px; background: white; border: 1px solid #f3f4f6; border-radius: 12px; font-size: 12px; color: #4b5563; cursor: pointer; }
+  .messages-area { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .bubble-wrap { display: flex; }
+  .bubble-wrap.user { justify-content: flex-end; }
+  .bubble-wrap.assistant { justify-content: flex-start; }
+  .bubble { padding: 10px 14px; border-radius: 16px; max-width: 80%; font-size: 13px; line-height: 1.5; }
+  .bubble.user { background: #10b981; color: white; border-bottom-right-radius: 4px; }
+  .bubble.assistant { background: white; border: 1px solid #f3f4f6; color: #374151; border-bottom-left-radius: 4px; }
+  .agent-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 500; color: #6b7280; margin-top: 4px; padding: 3px 8px; background: #f3f4f6; border-radius: 999px; }
+  .agent-badge svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .chat-input-row { display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid #f3f4f6; }
+  .chat-input { flex: 1; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 14px; font-size: 13px; color: #374151; background: white; }
+  .send-btn { background: #10b981; color: white; border: none; border-radius: 12px; padding: 10px 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .send-btn svg { width: 15px; height: 15px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── SCENE 8: End card ── */
+  #s8 { background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%); flex-direction: column; gap: 16px; }
+  #s8 .end-logo { display: flex; align-items: center; gap: 18px; }
+  #s8 .end-icon { width: 80px; height: 80px; background: rgba(255,255,255,0.12); border-radius: 22px; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(255,255,255,0.2); }
+  #s8 .end-icon svg { width: 42px; height: 42px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  #s8 h1 { font-size: 56px; font-weight: 800; color: white; letter-spacing: -1px; }
+  #s8 .end-tagline { font-size: 22px; color: #6ee7b7; font-weight: 500; }
+  #s8 .end-pills { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  #s8 .end-pill { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 500; }
+  #s8 .powered { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<!-- SCENE 1: Title -->
+<div class="scene" id="s1">
+  <div style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:18px;">
+    <div class="logo-wrap">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22c0 0-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2C20 17.5 12 22 12 22z"/><path d="M12 6v16M8 10l4-4 4 4"/></svg>
+      </div>
+      <h1>NutriAgent</h1>
+    </div>
+    <div class="sub">AI-Powered Multi-Agent Nutrition Assistant</div>
+    <div class="tagline">Personalized diet plans · Meal logging · Health advisory · AI chat</div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:8px;">
+      <div class="pill">🤖 IBM Granite LLM</div>
+      <div class="pill">🧠 RAG · ChromaDB</div>
+      <div class="pill">⚛️ React + FastAPI</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE 2: Login -->
+<div class="scene" id="s2">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22c0 0-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2C20 17.5 12 22 12 22z"/></svg>
+      </div>
+      <div>
+        <span>NutriAgent</span>
+        <small>AI Nutrition Platform</small>
+      </div>
+    </div>
+    <div class="login-h2">Sign in</div>
+    <div class="login-p">Welcome back! Enter your credentials.</div>
+    <label class="field-label">Email</label>
+    <input class="field-input" type="email" value="alex@example.com" readonly />
+    <label class="field-label">Password</label>
+    <input class="field-input" type="password" value="••••••••" readonly />
+    <button class="btn-green">Sign In</button>
+    <p style="text-align:center; font-size:12px; color:#9ca3af; margin-top:14px;">Don't have an account? <span style="color:#059669; font-weight:600;">Sign up</span></p>
+  </div>
+  <div class="caption-box">Secure login — start your nutrition journey</div>
+</div>
+
+<!-- SCENE 3: Onboarding -->
+<div class="scene" id="s3">
+  <div class="onboard-card">
+    <div class="onboard-header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22c0 0-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2C20 17.5 12 22 12 22z"/></svg>
+      </div>
+      <span>NutriAgent Setup</span>
+    </div>
+    <div class="step-bar">
+      <div class="step-seg"><div class="step-seg-bar done"></div><div class="step-seg-label active">Basic Info</div></div>
+      <div class="step-seg"><div class="step-seg-bar done"></div><div class="step-seg-label active">Health</div></div>
+      <div class="step-seg"><div class="step-seg-bar done"></div><div class="step-seg-label active">Preferences</div></div>
+      <div class="step-seg"><div class="step-seg-bar done"></div><div class="step-seg-label active">Goals</div></div>
+    </div>
+    <div class="onboard-body">
+      <h2>Fitness Goal</h2>
+      <button class="goal-btn selected">🔥 Lose Weight</button>
+      <button class="goal-btn unsel">⚖️ Maintain Weight</button>
+      <button class="goal-btn unsel">💪 Build Muscle</button>
+      <div style="margin-top:14px;">
+        <div style="font-size:13px; font-weight:600; color:#374151; margin-bottom:8px;">Health Conditions</div>
+        <div class="chips-row">
+          <div class="chip on">Diabetes</div>
+          <div class="chip off">Hypertension</div>
+          <div class="chip off">Heart Disease</div>
+          <div class="chip off">Obesity</div>
+          <div class="chip off">Anemia</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="caption-box">4-step onboarding: goals, conditions, diet preference, activity level</div>
+</div>
+
+<!-- SCENE 4: Dashboard -->
+<div class="scene" id="s4">
+  <div class="app-layout">
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <div class="icon">
+          <svg viewBox="0 0 24 24"><path d="M12 22c0 0-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2C20 17.5 12 22 12 22z"/></svg>
+        </div>
+        <span>NutriAgent</span>
+      </div>
+      <div class="nav-links">
+        <div class="nav-item active">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Dashboard
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M3 2h18M3 8h18M3 14h18M3 20h18"/></svg>
+          Log Meal
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Diet Plan
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Chat
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profile
+        </div>
+      </div>
+    </div>
+    <div class="main-content">
+      <div class="greeting-row">
+        <div>
+          <h1>Good morning, Alex! 👋</h1>
+          <p>Here's your nutrition overview</p>
+        </div>
+        <div class="streak-pill">⚡ 5 day streak</div>
+      </div>
+      <!-- Macro rings card -->
+      <div class="card">
+        <h2>Today's Progress</h2>
+        <div class="macro-row">
+          <!-- Calorie ring -->
+          <div class="ring-wrap">
+            <div class="cal-ring">
+              <svg width="100" height="100" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#f3f4f6" stroke-width="12"/>
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#10b981" stroke-width="12" stroke-dasharray="326.7" stroke-dashoffset="98" stroke-linecap="round"/>
+              </svg>
+              <div class="cal-center">
+                <div style="font-size:9px; color:#10b981; margin-bottom:2px;">🔥</div>
+                <div class="num">1340</div>
+                <div class="of">/ 1800 kcal</div>
+              </div>
+            </div>
+            <div class="ring-label">Calories</div>
+          </div>
+          <!-- Protein ring -->
+          <div class="ring-wrap">
+            <div class="small-ring">
+              <svg width="70" height="70" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#dbeafe" stroke-width="12"/>
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#3b82f6" stroke-width="12" stroke-dasharray="326.7" stroke-dashoffset="130" stroke-linecap="round"/>
+              </svg>
+              <div class="small-center"><div class="snum">62<span style="font-size:8px;">g</span></div><div class="sof">/ 95g</div></div>
+            </div>
+            <div class="ring-label">Protein</div>
+          </div>
+          <!-- Carbs ring -->
+          <div class="ring-wrap">
+            <div class="small-ring">
+              <svg width="70" height="70" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#fef3c7" stroke-width="12"/>
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#f59e0b" stroke-width="12" stroke-dasharray="326.7" stroke-dashoffset="90" stroke-linecap="round"/>
+              </svg>
+              <div class="small-center"><div class="snum">148<span style="font-size:8px;">g</span></div><div class="sof">/ 200g</div></div>
+            </div>
+            <div class="ring-label">Carbs</div>
+          </div>
+          <!-- Fat ring -->
+          <div class="ring-wrap">
+            <div class="small-ring">
+              <svg width="70" height="70" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#fce7f3" stroke-width="12"/>
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#ec4899" stroke-width="12" stroke-dasharray="326.7" stroke-dashoffset="180" stroke-linecap="round"/>
+              </svg>
+              <div class="small-center"><div class="snum">28<span style="font-size:8px;">g</span></div><div class="sof">/ 55g</div></div>
+            </div>
+            <div class="ring-label">Fat</div>
+          </div>
+        </div>
+      </div>
+      <!-- Weekly trend -->
+      <div class="card">
+        <h2>Weekly Calories Trend</h2>
+        <div class="chart-area">
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:62px;opacity:0.7;"></div><div class="chart-day">Mon</div></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:78px;opacity:0.8;"></div><div class="chart-day">Tue</div></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:55px;opacity:0.7;"></div><div class="chart-day">Wed</div></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:88px;"></div><div class="chart-day">Thu</div></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:70px;opacity:0.75;"></div><div class="chart-day">Fri</div></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:50px;opacity:0.6;"></div><div class="chart-day">Sat</div></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:40px;opacity:0.55;background:#a7f3d0;"></div><div class="chart-day">Sun</div></div>
+        </div>
+      </div>
+      <!-- Today's meals -->
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">Today's Meals</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div class="meal-card-item"><div><div class="meal-name">Dal Tadka + 2 Rotis</div><div class="meal-sub">Lunch · 12:30 PM</div></div><div class="kcal">480 kcal</div></div>
+          <div class="meal-card-item"><div><div class="meal-name">Oatmeal with Banana</div><div class="meal-sub">Breakfast · 8:00 AM</div></div><div class="kcal">320 kcal</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="caption-box" style="bottom:28px;">Dashboard — calorie ring, macro rings, weekly trend, today's meals</div>
+</div>
+
+<!-- SCENE 5: Log Meal -->
+<div class="scene" id="s5">
+  <div class="app-layout">
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 22c0 0-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2C20 17.5 12 22 12 22z"/></svg></div>
+        <span>NutriAgent</span>
+      </div>
+      <div class="nav-links">
+        <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</div>
+        <div class="nav-item active"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Log Meal</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Diet Plan</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chat</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+      </div>
+    </div>
+    <div class="log-body">
+      <h1>Log a Meal</h1>
+      <div>
+        <div style="font-size:12px;font-weight:500;color:#374151;margin-bottom:6px;">Meal Type</div>
+        <div class="meal-type-row">
+          <div class="mtype off">Breakfast</div>
+          <div class="mtype on">Lunch</div>
+          <div class="mtype off">Dinner</div>
+          <div class="mtype off">Snack</div>
+        </div>
+      </div>
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="tab-row">
+          <div class="tab-btn active-tab">
+            <svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+            Text
+          </div>
+          <div class="tab-btn">
+            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Photo
+          </div>
+          <div class="tab-btn">
+            <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            Voice
+          </div>
+        </div>
+        <div style="padding:14px 16px 16px;">
+          <div style="font-size:12px;font-weight:500;color:#374151;margin-bottom:6px;">Describe your meal</div>
+          <textarea class="text-area" readonly>I had a bowl of dal tadka with 2 rotis and some raita for lunch</textarea>
+          <button class="btn-green" style="width:100%;margin-top:10px;padding:10px;border-radius:12px;font-size:13px;">✓ Log This Meal</button>
+        </div>
+      </div>
+      <!-- Result -->
+      <div class="result-box">
+        <div class="result-title">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Meal Logged!
+        </div>
+        <div class="macro-grid">
+          <div class="macro-cell"><div class="mc-label">Calories</div><div class="mc-val">480<span class="mc-unit">kcal</span></div></div>
+          <div class="macro-cell"><div class="mc-label">Protein</div><div class="mc-val">22<span class="mc-unit">g</span></div></div>
+          <div class="macro-cell"><div class="mc-label">Carbs</div><div class="mc-val">65<span class="mc-unit">g</span></div></div>
+          <div class="macro-cell"><div class="mc-label">Fat</div><div class="mc-val">12<span class="mc-unit">g</span></div></div>
+        </div>
+        <div style="font-size:11px;font-weight:500;color:#374151;margin-bottom:4px;">Identified Items:</div>
+        <div class="food-item-row"><span class="fi-name">Dal Tadka (300g)</span><span class="fi-cal">312 kcal</span></div>
+        <div class="food-item-row"><span class="fi-name">Roti (60g × 2)</span><span class="fi-cal">168 kcal</span></div>
+        <div class="food-item-row"><span class="fi-name">Raita (100g)</span><span class="fi-cal">60 kcal</span></div>
+        <div class="feedback-text">Great protein choice! Consider adding a serving of salad to boost fiber intake. You're at 74% of your daily calorie target.</div>
+      </div>
+    </div>
+  </div>
+  <div class="caption-box" style="bottom:28px;">Log meals by text, photo upload, or voice — instant nutrition breakdown</div>
+</div>
+
+<!-- SCENE 6: Diet Plan -->
+<div class="scene" id="s6">
+  <div class="app-layout">
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 22c0 0-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2C20 17.5 12 22 12 22z"/></svg></div>
+        <span>NutriAgent</span>
+      </div>
+      <div class="nav-links">
+        <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Dashboard</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/></svg>Log Meal</div>
+        <div class="nav-item active"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Diet Plan</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chat</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+      </div>
+    </div>
+    <div class="plan-body">
+      <div class="plan-header-row">
+        <div><h1>Weekly Diet Plan</h1><p>Target: 1,800 kcal/day</p></div>
+        <button class="btn-green" style="padding:8px 16px;border-radius:10px;font-size:12px;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;">↻ Regenerate</button>
+      </div>
+      <div class="targets-card">
+        <div class="targets-label">Daily Targets</div>
+        <div class="targets-grid">
+          <div class="target-item"><div class="tv" style="color:#10b981;">1800<span class="tu">kcal</span></div><div class="tl">Calories</div></div>
+          <div class="target-item"><div class="tv" style="color:#3b82f6;">95<span class="tu">g</span></div><div class="tl">Protein</div></div>
+          <div class="target-item"><div class="tv" style="color:#f59e0b;">200<span class="tu">g</span></div><div class="tl">Carbs</div></div>
+          <div class="target-item"><div class="tv" style="color:#ec4899;">55<span class="tu">g</span></div><div class="tl">Fat</div></div>
+        </div>
+      </div>
+      <div class="day-cards">
+        <!-- Monday expanded -->
+        <div class="day-card">
+          <div class="day-card-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="day-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+              <div><div class="day-name">Monday</div><div class="day-kcal">~1,820 kcal</div></div>
+            </div>
+            <span style="font-size:12px;color:#9ca3af;">▲</span>
+          </div>
+          <div class="day-body">
+            <div class="meal-section bkf">
+              <div class="meal-section-title">🌅 Breakfast</div>
+              <div class="meal-food-row"><span class="meal-food-name"><svg viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Oatmeal<span class="meal-food-qty">(80g)</span></span><span class="meal-food-kcal">302 kcal</span></div>
+              <div class="meal-food-row"><span class="meal-food-name"><svg viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Banana<span class="meal-food-qty">(120g)</span></span><span class="meal-food-kcal">107 kcal</span></div>
+            </div>
+            <div class="meal-section lnc">
+              <div class="meal-section-title">☀️ Lunch</div>
+              <div class="meal-food-row"><span class="meal-food-name"><svg viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Dal Tadka<span class="meal-food-qty">(250g)</span></span><span class="meal-food-kcal">260 kcal</span></div>
+              <div class="meal-food-row"><span class="meal-food-name"><svg viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Roti × 3<span class="meal-food-qty">(90g)</span></span><span class="meal-food-kcal">252 kcal</span></div>
+            </div>
+            <div class="meal-section din">
+              <div class="meal-section-title">🌙 Dinner</div>
+              <div class="meal-food-row"><span class="meal-food-name"><svg viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Grilled Chicken<span class="meal-food-qty">(150g)</span></span><span class="meal-food-kcal">248 kcal</span></div>
+              <div class="meal-food-row"><span class="meal-food-name"><svg viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Quinoa<span class="meal-food-qty">(100g)</span></span><span class="meal-food-kcal">120 kcal</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="day-card"><div class="day-card-header"><div style="display:flex;align-items:center;gap:10px;"><div class="day-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="day-name">Tuesday</div><div class="day-kcal">~1,795 kcal</div></div></div><span style="font-size:12px;color:#9ca3af;">▼</span></div></div>
+        <div class="day-card"><div class="day-card-header"><div style="display:flex;align-items:center;gap:10px;"><div class="day-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="day-name">Wednesday</div><div class="day-kcal">~1,810 kcal</div></div></div><span style="font-size:12px;color:#9ca3af;">▼</span></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="caption-box" style="bottom:28px;">AI-generated 7-day meal plan — allergen-filtered, TDEE-calibrated</div>
+</div>
+
+<!-- SCENE 7: Chat -->
+<div class="scene" id="s7">
+  <div class="app-layout">
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 22c0 0-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2C20 17.5 12 22 12 22z"/></svg></div>
+        <span>NutriAgent</span>
+      </div>
+      <div class="nav-links">
+        <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Dashboard</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/></svg>Log Meal</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/></svg>Diet Plan</div>
+        <div class="nav-item active"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chat</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+      </div>
+    </div>
+    <div class="chat-body">
+      <div class="chat-header">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/></svg></div>
+        <div><h1>Nutrition AI</h1><p>Powered by RAG + IBM Granite</p></div>
+      </div>
+      <div class="messages-area">
+        <div class="bubble-wrap assistant">
+          <div>
+            <div class="bubble assistant">Hi! I'm your NutriAgent AI assistant. Ask me anything about nutrition, food, your health goals, or meal planning. I'll give you evidence-based answers from our nutrition knowledge base.</div>
+            <div class="agent-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>orchestrator</div>
+          </div>
+        </div>
+        <div class="bubble-wrap user">
+          <div class="bubble user">Is quinoa good for diabetes?</div>
+        </div>
+        <div class="bubble-wrap assistant">
+          <div>
+            <div class="bubble assistant">Yes! Quinoa is an excellent choice for diabetes management. It has a low glycemic index (GI ~53), is high in protein (8g per 100g cooked), and provides complete essential amino acids. Its high fiber content (2.8g/100g) slows glucose absorption, helping stabilize blood sugar levels. It also contains magnesium, which is linked to improved insulin sensitivity.</div>
+            <div class="agent-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>advisory agent</div>
+          </div>
+        </div>
+        <div class="bubble-wrap user">
+          <div class="bubble user">What are the nutrition facts for lentil soup?</div>
+        </div>
+        <div class="bubble-wrap assistant">
+          <div>
+            <div class="bubble assistant">Per 100g of lentil soup: ~116 kcal · Protein: 9g · Carbs: 20g · Fat: 0.4g · Fiber: 7.9g. Excellent source of folate, iron, and potassium. Cited from knowledge base: Lentil Soup entry.</div>
+            <div class="agent-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>knowledge agent</div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input" type="text" value="What foods are high in iron?" readonly />
+        <button class="send-btn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      </div>
+    </div>
+  </div>
+  <div class="caption-box" style="bottom:28px;">4 specialized AI agents — Knowledge, Advisory, Recommendation, FoodLog — powered by IBM Granite + RAG</div>
+</div>
+
+<!-- SCENE 8: End -->
+<div class="scene" id="s8">
+  <div style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:20px;">
+    <div class="end-logo">
+      <div class="end-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22c0 0-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2C20 17.5 12 22 12 22z"/><path d="M12 6v8M8 10l4 4 4-4"/></svg>
+      </div>
+      <h1>NutriAgent</h1>
+    </div>
+    <div class="end-tagline">Personalized Nutrition Powered by AI</div>
+    <div class="end-pills">
+      <div class="end-pill">📊 Dashboard &amp; Tracking</div>
+      <div class="end-pill">🍽️ Multimodal Meal Logging</div>
+      <div class="end-pill">📅 7-Day Diet Plans</div>
+      <div class="end-pill">🤖 Multi-Agent AI Chat</div>
+      <div class="end-pill">❤️ Health Advisory</div>
+    </div>
+    <div class="powered">Built with IBM Granite · LangChain · ChromaDB · React · FastAPI</div>
+  </div>
+</div>
+
+<script>
+  const scenes = ['s1','s2','s3','s4','s5','s6','s7','s8'];
+  // Durations in ms for each scene
+  const durations = [4000, 5000, 5000, 7000, 7000, 7000, 7000, 5000];
+  let current = 0;
+
+  function showScene(i) {
+    scenes.forEach((id, idx) => {
+      document.getElementById(id).classList.toggle('active', idx === i);
+    });
+  }
+
+  function advance() {
+    if (current < scenes.length - 1) {
+      current++;
+      showScene(current);
+      setTimeout(advance, durations[current]);
+    }
+  }
+
+  showScene(0);
+  setTimeout(advance, durations[0]);
+</script>
+</body>
+</html>
