@@ -1,0 +1,15 @@
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
+sqlalchemy==2.0.29
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.9
+pydantic[email]==2.6.4
+python-dotenv==1.0.1
+replicate==0.25.1
+langchain==0.1.16
+langchain-community==0.0.34
+chromadb==0.4.24
+sentence-transformers==2.7.0
+torch==2.2.2
+huggingface-hub==0.22.2

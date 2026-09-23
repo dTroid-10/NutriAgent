@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nutriagent-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - REPLICATE_API_TOKEN=${REPLICATE_API_TOKEN:-}
+      - SECRET_KEY=${SECRET_KEY:-nutriagent-dev-secret-key-change-in-prod}
+      - DATABASE_URL=sqlite:///./nutriagent.db
+      - CHROMA_PERSIST_DIR=/app/chroma_db
+    volumes:
+      - nutriagent-db:/app
+      - nutriagent-chroma:/app/chroma_db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nutriagent-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  nutriagent-db:
+  nutriagent-chroma:
